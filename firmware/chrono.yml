@@ -38,7 +38,7 @@ i2c:
 # - Wakeup on movement (Interrupts on pin 13)
 deep_sleep:
   run_duration:
-    default: 10s
+    default: 15s
     gpio_wakeup_reason: 30s
   sleep_duration: 15min
   wakeup_pin: GPIO13
@@ -95,24 +95,12 @@ sensor:
       auto mpu = new MPU6050Component();
       App.register_component(mpu);
       mpu->set_i2c_bus( i2c_arduinoi2cbus );
-      mpu->set_accel_x_sensor(new Sensor());
-      mpu->set_accel_y_sensor(new Sensor());
-      mpu->set_accel_z_sensor(new Sensor());
       mpu->set_face_sensor(new Sensor());
-      return { mpu->accel_x_sensor_
-             , mpu->accel_y_sensor_
-             , mpu->accel_z_sensor_
-             , mpu->temperature_sensor_
-             , mpu->face_sensor_
-             };
+      return { mpu->face_sensor_ };
     sensors:  
-      - name: "MPU6050 Accel X"
-        unit_of_measurement: "m/s^2"
-        accuracy_decimals: 2
-      - name: "MPU6050 Accel Y"
-        unit_of_measurement: "m/s^2"
-        accuracy_decimals: 2
-      - name: "MPU6050 Accel Z"
-        unit_of_measurement: "m/s^2"
-        accuracy_decimals: 2
       - name: "Chronodecahedron Side"
+        filters:
+          - median: # TODO: Are these options good?
+              window_size: 6
+              send_every: 3
+              send_first_at: 3

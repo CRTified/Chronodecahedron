@@ -20,6 +20,23 @@ const uint8_t MPU6050_BIT_SLEEP_ENABLED = 6;
 const uint8_t MPU6050_BIT_TEMPERATURE_DISABLED = 3;
 const float GRAVITY_EARTH = 9.80665f;
 
+// Vectors calculated by ./misc/vector_calc.sage
+const float FACES[12][4] = {
+  // Remember: Rotation might be numerically imprecise
+  /*  1 */ { +0.0000000, -0.0493718, +0.9987805 },
+  /*  2 */ { -0.5257311, +0.7006446, +0.4823940 },
+  /*  3 */ { +0.5257311, +0.7006446, +0.4823940 },
+  /*  4 */ { +0.8506508, -0.2981359, +0.4330222 },
+  /*  5 */ { +0.0000000, -0.9154162, +0.4025087 },
+  /*  6 */ { -0.8506508, -0.2981359, +0.4330222 },
+  /*  7 */ { -0.8506508, +0.2981359, -0.4330222 },
+  /*  8 */ { +0.0000000, +0.9154162, -0.4025087 },
+  /*  9 */ { +0.8506508, +0.2981359, -0.4330222 },
+  /* 10 */ { +0.5257311, -0.7006446, -0.4823940 },
+  /* 11 */ { -0.5257311, -0.7006446, -0.4823940 },
+  /* 12 */ { +0.0000000, +0.0493718, -0.9987805 },
+};
+
 class MPU6050Component : public PollingComponent, public i2c::I2CDevice {
 public:
   MPU6050Component() : PollingComponent(1000), I2CDevice() {};
@@ -86,22 +103,12 @@ public:
 
     /*
       https://www.eluke.nl/2016/08/11/how-to-enable-motion-detection-interrupt-on-mpu6050/
-
-
-    (optionally?) Reset all internal signal paths in the MPU-6050 by writing 0x07 to register 0x68;
-    write register 0x37 to select how to use the interrupt pin. For an active high, push-pull signal that stays until register (decimal) 58 is read, write 0x20.
-    Write register 28 (==0x1C) to set the Digital High Pass Filter, bits 3:0. For example set it to 0x01 for 5Hz. (These 3 bits are grey in the data sheet, but they are used! Leaving them 0 means the filter always outputs 0.)
-    Write the desired Motion threshold to register 0x1F (For example, write decimal 20).
-    To register 0x20 (hex), write the desired motion duration, for example 40ms.
-    to register 0x69, write the motion detection decrement and a few other settings (for example write 0x15 to set both free-fall and motion decrements to 1 and accelerometer start-up delay to 5ms total by adding 1ms. )
-    write register 0x38, bit 6 (0x40), to enable motion detection interrupt.
-
      */
     ESP_LOGV(TAG, "  Setting up Motion Detection...");
     // if (!this->write_byte(0x68, 0x07)) { this->mark_failed(); return; }; // Reset foo
     if (!this->write_byte(0x37, 0x30)) { this->mark_failed(); return; }; // Active high, until any read
     if (!this->write_byte(0x1C, 0x04)) { this->mark_failed(); return; }; // 5Hz High Pass
-    if (!this->write_byte(0x1F,  15)) { this->mark_failed(); return; }; // Motion Threshold 20 mg
+    if (!this->write_byte(0x1F,  5)) { this->mark_failed(); return; }; // Motion Threshold 10 mg
     if (!this->write_byte(0x20,  10)) { this->mark_failed(); return; }; // 10ms movement for wakeup
     if (!this->write_byte(0x69, 0x15)) { this->mark_failed(); return; }; // Free-Fall and motion decrements to 1
     if (!this->write_byte(0x38, 0x40)) { this->mark_failed(); return; }; // Enable Motion Detection Interrupt
@@ -121,6 +128,7 @@ public:
     LOG_SENSOR("  ", "Gyro Y", this->gyro_y_sensor_);
     LOG_SENSOR("  ", "Gyro Z", this->gyro_z_sensor_);
     LOG_SENSOR("  ", "Temperature", this->temperature_sensor_);
+    LOG_SENSOR("  ", "Face", this->face_sensor_);
   }
 
   void update() override {
@@ -165,22 +173,6 @@ public:
       this->gyro_z_sensor_->publish_state(gyro_z);
 
 
-    // Vectors calculated by ./misc/vector_calc.sage
-    const float FACES[12][4] = {
-      // Remember: Rotation might be numerically imprecise
-      /*  1 */ { +0.0000000, -0.0493718, +0.9987805 },
-      /*  2 */ { -0.5257311, +0.7006446, +0.4823940 },
-      /*  3 */ { +0.5257311, +0.7006446, +0.4823940 },
-      /*  4 */ { +0.8506508, -0.2981359, +0.4330222 },
-      /*  5 */ { +0.0000000, -0.9154162, +0.4025087 },
-      /*  6 */ { -0.8506508, -0.2981359, +0.4330222 },
-      /*  7 */ { -0.8506508, +0.2981359, -0.4330222 },
-      /*  8 */ { +0.0000000, +0.9154162, -0.4025087 },
-      /*  9 */ { +0.8506508, +0.2981359, -0.4330222 },
-      /* 10 */ { +0.5257311, -0.7006446, -0.4823940 },
-      /* 11 */ { -0.5257311, -0.7006446, -0.4823940 },
-      /* 12 */ { +0.0000000, +0.0493718, -0.9987805 },
-    };
 
     float magn = sqrt(pow(accel_x, 2) + pow(accel_y, 2) + pow(accel_z, 2));
     
