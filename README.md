@@ -73,6 +73,11 @@ the detected side as a sensor over MQTT or other protocols.
 
  - Desolder the JST-PH header for the battery (We will connect the battery directly)
  - Desolder the LED on the GY-521 (white component next to the x-axis silkscreen)
+ 
+| Before                                                                                | After                                                                         |
+|---------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
+| ![GY-521, with the LED marked with a red circle](./assets/gy_led.jpg "LED to remove") | ![GY-521, with the LED next to it](./assets/gy_led_removed.jpg "Removed LED") |
+ 
  - Stick both 100kΩ resistor with one lead through `GPIO33` and make a solder connection
  - Solder the other lead of one of the 100kΩ resistors to the `+`-pad of the battery connector
  - Stick the other lead of the second resistor through `GND`, **but don't connect it yet**
@@ -80,7 +85,13 @@ the detected side as a sensor over MQTT or other protocols.
  - Solder another short piece of jumper wire (~2cm) on `INT`of the GY-521
  - Break away one of the pins of the pin header (you will have one single pin and a row of 5)
  - Solder the single pin on VCC of the GY-521, the remaining row on the pins `SCL` to `ADO`
- - Solder the other end of the long jumper wire to `GND` of the GY-521
+
+![GY-521 with pin row soldered to it](./assets/gy_header.jpg "Expected Result")
+ 
+ - Solder the other end of the long jumper wire to `GND` of the GY-521 (shown here without Board on the other side)
+ 
+![GY-521 with pin row and cables soldered to it](./assets/gy_header_wire.jpg "Expected Result")
+ 
  - Stick the GY-521 into `3V` to `GPIO17` of the Lolin32 Lite (This will leave `GPIO22` and `GPIO16` unconnected)
    - Make sure that it's relatively parallel to the Lolin32 Lite
  - Solder the other end of the short jumper wire to `GPIO13` of the Lolin32 Lite
