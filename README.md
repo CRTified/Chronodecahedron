@@ -1,3 +1,8 @@
+# This project is still under construction.
+
+Do not attempt to reproduce it with the given files at the current state.
+Documentation is still lacking, and the 3D models are missing.
+
 # Chronodecahedron
 
  [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.html)
@@ -88,9 +93,9 @@ the detected side as a sensor over MQTT or other protocols.
 
 ### 3) Firmware
 
- - Modify the `yaml`-files in the `esphome` directory to your needs
+ - Modify the `yml`-files in the `esphome` directory to your needs (especially `secrets.yml`)
  - Connect the Lolin32
- - Run `esphome run chrono.yaml` in that directory
+ - Run `esphome run chrono.yml` in that directory
  - Check that it works as expected (Side detection, battery level, battery charging)
    - The battery level might require fine-tuning. Measure the actual battery voltage level and compare it to the raw reported one.
  
