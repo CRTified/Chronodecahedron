@@ -1,0 +1,118 @@
+esphome:
+  name: chronodecahedron
+  comment: Time Logging Dodecahedron
+  includes:
+    - MPU6050.h
+
+esp32:
+  board: lolin32_lite
+
+# Modify secrets.yml to adapt to your environment
+packages:
+  secrets: !include ./secrets.yml
+
+
+## Using the native API is not ideal, as the
+## API is unavailable most of the time.
+## MQTT is a good alternative for this, as
+## it allows persisting the last value
+# api:
+#   reboot_timeout: 0s
+
+
+# Kill mqtt birth/will message
+# So that we don't get "Unavailable" components
+mqtt:
+  birth_message:
+  will_message:
+
+# I2C is hard-wired with the pin header
+i2c:
+  sda: GPIO23
+  scl: GPIO19
+  scan: false
+  frequency: 100kHz
+
+# Deep sleep to save battery
+# - Wakeup every 15 minutes to report battery
+# - Wakeup on movement (Interrupts on pin 13)
+deep_sleep:
+  run_duration:
+    default: 10s
+    gpio_wakeup_reason: 30s
+  sleep_duration: 15min
+  wakeup_pin: GPIO13
+    
+sensor:
+  - platform: wifi_signal
+    name: "WiFi Signal"
+    update_interval: 60s
+  - platform: adc
+    pin: GPIO33
+    name: "Raw Battery Level"
+    update_interval: 5s
+    attenuation: auto
+    filters:
+      # Modify this if the reported voltage does not match the measured one
+      - multiply: 1.98
+  - platform: adc
+    pin: GPIO33
+    name: "Battery Level"
+    update_interval: 1s
+    unit_of_measurement: "%"
+    accuracy_decimals: 0
+    icon: mdi:battery-medium
+    attenuation: auto
+    filters:
+      # Modify this if the reported voltage does not match the measured one
+      - multiply: 1.98
+      # Make it less noisy
+      - min:
+          window_size: 10
+          send_every: 1
+      # Polynomial calibration to match Li-Ion discharge curve
+      - calibrate_polynomial:
+         degree: 3
+         datapoints:
+          - 3.10 -> 0.0
+          - 3.23 -> 5.0
+          - 3.33 -> 10.0
+          - 3.40 -> 20.0
+          - 3.48 -> 30.0
+          - 3.57 -> 50.0
+          - 3.65 -> 60.0
+          - 3.72 -> 70.0
+          - 3.80 -> 80.0
+          - 3.88 -> 90.0
+          - 4.05 -> 99.0
+          - 4.10 -> 100.0
+        # Lambda filter to limit range
+      - lambda: |-
+            return (x > 100) ? 100 : ((x < 0) ? 0 : x);
+  # Custom component for MPU6050
+  - platform: custom
+    lambda: |-
+      auto mpu = new MPU6050Component();
+      App.register_component(mpu);
+      mpu->set_i2c_bus( i2c_arduinoi2cbus );
+      mpu->set_accel_x_sensor(new Sensor());
+      mpu->set_accel_y_sensor(new Sensor());
+      mpu->set_accel_z_sensor(new Sensor());
+      mpu->set_face_sensor(new Sensor());
+      return { mpu->accel_x_sensor_
+             , mpu->accel_y_sensor_
+             , mpu->accel_z_sensor_
+             , mpu->temperature_sensor_
+             , mpu->face_sensor_
+             };
+    sensors:  
+      - name: "MPU6050 Accel X"
+        unit_of_measurement: "m/s^2"
+        accuracy_decimals: 2
+      - name: "MPU6050 Accel Y"
+        unit_of_measurement: "m/s^2"
+        accuracy_decimals: 2
+      - name: "MPU6050 Accel Z"
+        unit_of_measurement: "m/s^2"
+        accuracy_decimals: 2
+      - name: "Chronodecahedron Side"
