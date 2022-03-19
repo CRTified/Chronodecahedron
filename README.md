@@ -26,6 +26,8 @@ accelerometer to detect which side faces up.
 By using [esphome](https://esphome.io) as a platform, it is then able to expose 
 the detected side as a sensor over MQTT or other protocols.
 
+Check out [the model on a360.co](https://a360.co/3KxAjle). The `STL` and `f3z` are available in this repo.
+
 ## What do I need?
 
 ### Tools
