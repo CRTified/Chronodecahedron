@@ -1,7 +1,7 @@
 # This project is still under construction.
 
 Do not attempt to reproduce it with the given files at the current state.
-Documentation is still lacking, and the 3D models are missing.
+Documentation is still lacking and stuff might change a bit.
 
 # Chronodecahedron
 
