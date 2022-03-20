@@ -11,6 +11,8 @@ Documentation is still lacking and stuff might change a bit.
 
 https://esphome.io/ powered physical time-tracking dodecahedron.
 
+![Chronodecahedron](./assets/chronodecahedron.jpg "Chronodecahedron")
+
 ## Licensing
 
  - [AGPL-3.0 or later](./LICENSE.AGPL-3.0-or-later) applies to the code and configuration `configuration.yaml`
