@@ -48,29 +48,28 @@ sensor:
     name: "WiFi Signal"
     update_interval: 60s
   - platform: adc
-    pin: GPIO33
     name: "Raw Battery Level"
+    id: battery_raw
+    pin: GPIO33
     update_interval: 5s
     attenuation: auto
     filters:
       # Modify this if the reported voltage does not match the measured one
       - multiply: 1.98
-  - platform: adc
-    pin: GPIO33
+  - platform: template
     name: "Battery Level"
-    update_interval: 1s
+    update_interval: 5s
+    lambda: |-
+      return id(battery_raw).state;
     unit_of_measurement: "%"
     accuracy_decimals: 0
     icon: mdi:battery-medium
-    attenuation: auto
     filters:
-      # Modify this if the reported voltage does not match the measured one
-      - multiply: 1.98
-      # Make it less noisy
+      # Make voltage level less noisy
       - min:
           window_size: 10
           send_every: 1
-      # Polynomial calibration to match Li-Ion discharge curve
+      # Polynomial calibration to somewhat match Li-Ion discharge curve
       - calibrate_polynomial:
          degree: 3
          datapoints:
@@ -99,8 +98,8 @@ sensor:
       return { mpu->face_sensor_ };
     sensors:  
       - name: "Chronodecahedron Side"
-        filters:
-          - median: # TODO: Are these options good?
-              window_size: 6
-              send_every: 3
-              send_first_at: 3
+        filters: # Filter to make the reaction to side-changes a bit more robust
+          - median:
+              window_size: 3
+              send_every: 2
+              send_first_at: 1
