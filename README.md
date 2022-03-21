@@ -126,7 +126,7 @@ Check out [the model on a360.co](https://a360.co/3KxAjle). The `STL` and `f3z` a
  
  - Use the double-sided tape to attach the Li-Ion battery to the inside of the `hull.stl`
 
-![Hull with attached Li-Ion Battery](.assets/hull_liion.jpg "Li-Ion taped to inner wall")
+![Hull with attached Li-Ion Battery](./assets/hull_liion.jpg "Li-Ion taped to inner wall")
  
  - Close the `base.stl` and the `hull.stl` and connect them with the M3 screws.
 
