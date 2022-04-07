@@ -131,3 +131,50 @@ Check out [the model on a360.co](https://a360.co/3KxAjle). The `STL` and `f3z` a
  - Close the `base.stl` and the `hull.stl` and connect them with the M3 screws.
 
 ![Closed up](./assets/dodecahedron_done.jpg "Done")
+
+# `chronodecahedron-watcher`
+
+`./src` contains a small python script that connects to MQTT and dumps the state
+of the cube in a csv-like fashion (separator is ` ` - space), for easier 
+processing in spreadsheets.
+
+It can also be configured as a service on NixOS devices by:
+
+ - Adding this repository as a flake input, e.g.:
+
+```nix
+    chronodecahedron = {
+      url = "github:CRTified/Chronodecahedron";
+	  # We only use basic library functions and packages, following your nixpkgs should be safe:
+      inputs.nixpkgs.follows = "nixpkgs"; 
+    };
+```
+
+ - Importing `chronodecahedron.nixosModule` as a module
+ - Configuring the service under `services.chronodecahedron-watcher`, e.g.:
+
+```nix
+  services.chronodecahedron-watcher = {
+    # Make it depend on mosquitto
+    enable = config.services.mosquitto.enable;
+    user = "chronos";
+    group = "chronos";
+	
+    mqttServer = "localhost";
+    mqttPort = 1883;
+	
+    mqttCredentialsFile = "/var/keys/mqttAuth";
+
+    device = "timecube";
+    logFile = "/root/chronodecahedron.csv";
+  };
+```
+
+
+Note that credentials bypass the nix store and are stored in `/var/keys/mqttAuth`.
+This file needs the following entries adapted to your need:
+```
+CHRONO_MQTT_USER=$mqttuser
+CHRONO_MQTT_PASS=$mqttpass
+```
+
