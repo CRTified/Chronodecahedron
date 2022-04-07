@@ -1,7 +1,4 @@
-# This project is still under construction.
 
-Do not attempt to reproduce it with the given files at the current state.
-Documentation is still lacking and stuff might change a bit.
 
 # Chronodecahedron
 
@@ -18,6 +15,13 @@ https://esphome.io/ powered physical time-tracking dodecahedron.
  - [AGPL-3.0 or later](./LICENSE.AGPL-3.0-or-later) applies to the code and configuration `configuration.yaml`
  - [CC-BY-NC-4.0](./LICENSE.CC-BY-NC-4.0) applies to the 3D-model, description and other support material
 
+## Project is WIP, but close to completion
+
+Documentation is lacking at some points, but this is personally not a high priority.
+The design is mostly settled, but might get some minor touchups.
+Software might need some improvements, especially for keeping a usage history on
+the ESP. Right now, this needs to be done manually.
+
 ## What is this?
 
 This device is a physical time-tracking device to easily track how long you work on what.
@@ -29,6 +33,13 @@ By using [esphome](https://esphome.io) as a platform, it is then able to expose
 the detected side as a sensor over MQTT or other protocols.
 
 Check out [the model on a360.co](https://a360.co/3KxAjle). The `STL` and `f3z` are available in this repo.
+
+### Use-Cases
+
+ - Tracking time for projects (E.g. freelancers that switch between projects)
+ - Use as scene-selector in home automation setups
+
+Feel free to open PRs to extend this list :)
 
 ## What do I need?
 
